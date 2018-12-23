@@ -1,0 +1,20 @@
+{
+    "name": "hmusche/solsken",
+    "description": "Base classes for MVC projects",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Hendrick",
+            "email": "hmusche@gmail.com"
+        }
+    ],
+    "require": {
+        "catfan/Medoo": "^1.6",
+        "ext-intl": "*"
+    },
+	"autoload": {
+		"psr-4": {
+			"Solsken\\": "/src"
+		}
+	}
+}
