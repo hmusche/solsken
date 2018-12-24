@@ -26,10 +26,12 @@ class Controller {
      *
      * @return Solsken\Controller
      */
-    static public function getController() {
+    static public function getController($namespace) {
         $request = Request::getInstance();
 
-        $controller = 'Solsken\\Controller\\' . ucfirst(Util::toCamelCase($request->get('controller')));
+
+
+        $controller = $namespace . '\\Controller\\' . ucfirst(Util::toCamelCase($request->get('controller')));
         $controller = new $controller;
 
         return $controller;

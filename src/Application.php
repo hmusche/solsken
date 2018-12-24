@@ -15,20 +15,13 @@ class Application {
     /**
      * Get Configuration and set in Registry, and create Controller class
      */
-    public function __construct() {
-        /**
-         * Merge credentials.php in config dir for secrets not to be pushed in git
-         */
-        $credentials = include('config/credentials.php');
-        $config      = include('config/config.php');
-        $config      = array_merge_recursive($config, $credentials);
-
+    public function __construct(array $config) {
         Registry::set('app.config', $config);
         Registry::set('app.db', new Medoo($config['db']));
 
         session_start();
 
-        $this->_controller = Controller::getController();
+        $this->_controller = Controller::getController($config['namespace']);
     }
 
     /**
