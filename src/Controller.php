@@ -61,7 +61,6 @@ class Controller {
 
         $this->_view->template = $defaultTemplate;
         $this->_view->request  = $this->_request;
-        $this->_view->webhost  = Registry::get('app.config')['host'] . Registry::get('app.config')['path'];
     }
 
     /**

@@ -24,10 +24,14 @@ class View {
      */
     protected $_data = [];
 
+    public $webhost;
+
     /**
      * Private constructor
      */
-    private function __construct() {}
+    private function __construct() {
+        $this->webhost  = Registry::get('app.config')['host'] . Registry::get('app.config')['path'];
+    }
 
     /**
      * Set Template for View
