@@ -10,6 +10,7 @@ abstract class ElementAbstract {
     protected $_attributes = [];
     protected $_validators = [];
     protected $_errors     = [];
+    protected $_options    = [];
     protected $_value;
     protected $_label;
 
@@ -38,6 +39,8 @@ abstract class ElementAbstract {
 
             $this->_validators[$validatorHash] = new $validatorClass($validatorOptions);
         }
+
+        $this->_options = $options;
     }
 
 

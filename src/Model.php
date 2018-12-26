@@ -36,10 +36,33 @@ class Model {
      */
     public function __call($method, $args) {
         if (method_exists($this->_db, $method)) {
-            $args = array_merge([$this->_name], $args);
+            if ($method != 'query') {
+                $args = array_merge([$this->_name], $args);
+            }
+
             return call_user_func_array([$this->_db, $method], $args);
         } else {
             throw new \Exception('Unknown DB method ' . $method);
         }
+    }
+
+    public function getEnumSelect($column) {
+        $result = $this->query("SHOW COLUMNS FROM {$this->_name} WHERE FIELD = '{$column}'")->fetch();
+        $return = [];
+
+        if ($result && strpos($result['Type'], 'enum') === 0) {
+            $enum = substr($result['Type'], 5, -1);
+
+            if ($result['Null'] != 'NO') {
+                $return[''] = 'please.select';
+            }
+
+            foreach (explode(',', $enum) as $value) {
+                $value = str_replace('\'', '', $value);
+                $return[$value] = $this->_name . '.' . $column . '.' . $value;
+            }
+        }
+
+        return $return;
     }
 }
