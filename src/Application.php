@@ -4,6 +4,10 @@ namespace Solsken;
 
 use Solsken\Controller;
 use Solsken\Registry;
+use Solsken\I18n;
+use Solsken\Cookie;
+use Solsken\View;
+
 use Medoo\Medoo;
 
 /**
@@ -22,6 +26,17 @@ class Application {
         session_start();
 
         $this->_controller = Controller::getController($config['namespace']);
+
+        $locale   = Cookie::get('locale_settings');
+        $timezone = Cookie::get('timezone', isset($config['timezone']) ? $config['timezone'] : null);
+
+        $i18n = I18n::getInstance($locale, $timezone);
+
+        if (isset($config['translation'])) {
+            $i18n->setTranslationOptions($config['translation']);
+
+            View::getInstance()->addHelper('t', [$i18n, 'translate']);
+        }
     }
 
     /**

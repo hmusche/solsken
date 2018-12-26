@@ -24,6 +24,11 @@ class View {
      */
     protected $_data = [];
 
+    /**
+     * Array of helper calls
+     */
+    protected $_helpers = [];
+
     public $webhost;
 
     /**
@@ -95,6 +100,10 @@ class View {
         $this->_data = [];
     }
 
+    public function addHelper($key, $helper) {
+        $this->_helpers[$key] = $helper;
+    }
+
     /**
      * Magic setter to set values in view
      * @param string $key
@@ -111,6 +120,14 @@ class View {
      */
     public function __get($key) {
         return array_key_exists($key, $this->_data) ? $this->_data[$key] : null;
+    }
+
+    public function __call($method, $args) {
+        if (isset($this->_helpers[$method])) {
+            return call_user_func_array($this->_helpers[$method], $args);
+        }
+
+        throw new \Exception("Unknown method $method called");
     }
 
     /**
