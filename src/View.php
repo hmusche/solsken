@@ -2,6 +2,8 @@
 
 namespace Solsken;
 
+use Solsken\Request;
+
 /**
  * View class
  */
@@ -30,12 +32,14 @@ class View {
     protected $_helpers = [];
 
     public $webhost;
+    public $path;
 
     /**
      * Private constructor
      */
     private function __construct() {
         $this->webhost  = Registry::get('app.config')['host'] . Registry::get('app.config')['path'];
+        $this->path     = Request::getInstance()->get('path');
     }
 
     /**

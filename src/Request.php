@@ -76,8 +76,8 @@ class Request {
      */
     protected function _parseRequest() {
         $config = Registry::get('app.config');
-
-        $parts = explode('/', str_replace($config['path'], '', $_SERVER['REQUEST_URI']));
+        $path   = str_replace($config['path'], '', $_SERVER['REQUEST_URI']);
+        $parts  = explode('/', $path);
 
         if (trim($parts[0]) !== '') {
             self::$_request['controller'] = $parts[0];
@@ -87,11 +87,12 @@ class Request {
             self::$_request['action'] = $parts[1];
         }
 
+        self::$_request['path']   = $path;
         self::$_request['is_xhr'] = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
         self::$_request['method'] = strtolower($_SERVER['REQUEST_METHOD']);
         self::$_request['get']    = $_GET;
         self::$_request['post']   = $_POST;
-        self::$_request['params'] = array_merge($_GET, $_POST);
+        self::$_request['params'] = array_merge($_GET, $_POST, $_FILES);
 
         if (count($parts) > 2) {
             $currKey = false;
