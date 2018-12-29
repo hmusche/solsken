@@ -76,7 +76,8 @@ class Request {
      */
     protected function _parseRequest() {
         $config = Registry::get('app.config');
-        $path   = str_replace($config['path'], '', $_SERVER['REQUEST_URI']);
+
+        $path   = $config['path'] != '/' ? str_replace($config['path'], '', $_SERVER['REQUEST_URI']) : $config['path'];
         $parts  = explode('/', $path);
 
         if (trim($parts[0]) !== '') {
