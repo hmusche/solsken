@@ -116,8 +116,8 @@ class Form {
          */
         $formData = [];
 
-        foreach ($this->_elements as $element) {
-            $formData[$element->getName()] = $element->getValue();
+        foreach ($this->_elements as $name => $element) {
+            $formData[$name] = $element->getValue();
         }
 
         $where = [];

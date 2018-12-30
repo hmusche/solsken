@@ -17,27 +17,26 @@ abstract class ElementAbstract {
     abstract public function populate(Array $data);
 
     public function __construct($name, $options, $value = null) {
-        $defaultOptions = [
-            'attributes' => [
-                'type' => 'text'
-            ],
-            'validators' => [
-                'required' => []
-            ]
-        ];
+        if (!isset($options['validators'])) {
+            $options['validators'] = ['required' => []];
+        }
 
-        $options = array_merge_recursive($defaultOptions, $options);
+        if (!isset($options['attributes'])) {
+            $options['attributes'] = [];
+        }
 
-        $this->_name = $name;
-        $this->_value = $value;
-        $this->_label = isset($options['label']) ? $options['label'] : ucfirst($name);
+        $this->_name       = $name;
+        $this->_value      = $value;
+        $this->_label      = isset($options['label']) ? $options['label'] : ucfirst($name);
         $this->_attributes = array_merge($options['attributes'], $this->_attributes);
 
         foreach ($options['validators'] as $validator => $validatorOptions) {
-            $validatorClass = "\\Solsken\\Form\\Validator\\" . ucfirst(Util::toCamelCase($validator));
-            $validatorHash = serialize($validatorOptions) . $validator;
+            if ($validatorOptions !== false) {
+                $validatorClass = "\\Solsken\\Form\\Validator\\" . ucfirst(Util::toCamelCase($validator));
+                $validatorHash = serialize($validatorOptions) . $validator;
 
-            $this->_validators[$validatorHash] = new $validatorClass($validatorOptions);
+                $this->_validators[$validatorHash] = new $validatorClass($validatorOptions);
+            }
         }
 
         $this->_options = $options;
@@ -66,7 +65,7 @@ abstract class ElementAbstract {
     }
 
     public function getName() {
-        return $this->_name;
+        return isset($this->_attributes['multiple']) ? $this->_name . '[]' : $this->_name;
     }
 
     public function getValue() {
