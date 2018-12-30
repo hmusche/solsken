@@ -19,6 +19,10 @@ class Util {
         return lcfirst($string);
     }
 
+    static public function getUniqueId() {
+        return bin2hex(openssl_random_pseudo_bytes(8));
+    }
+
     static public function isLoggedIn() {
         return isset($_SESSION['user']);
     }
