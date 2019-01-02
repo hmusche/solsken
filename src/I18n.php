@@ -67,6 +67,18 @@ class I18n {
         $this->_supportedLocales = $locales;
     }
 
+    public function getSupportedLocales() {
+        return $this->_supportedLocales;
+    }
+
+    public function formatDate($dt, $format = 'medium') {
+        if (!is_object($dt)) {
+            $dt = \Punic\Calendar::toDateTime($dt);
+        }
+
+        return \Punic\Calendar::formatDatetime($dt, $format, $this->getLocale(false));
+    }
+
     public function translate($string, $options = []) {
         $locale = $this->getLocale(false);
 

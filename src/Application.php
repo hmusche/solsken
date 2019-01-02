@@ -36,6 +36,7 @@ class Application {
             $i18n->setTranslationOptions($config['translation']);
 
             View::getInstance()->addHelper('t', [$i18n, 'translate']);
+            View::getInstance()->addHelper('date', [$i18n, 'formatDate']);
         }
     }
 
