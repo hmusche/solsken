@@ -77,10 +77,10 @@ class Request {
     protected function _parseRequest() {
         $config = Registry::get('app.config');
 
-        $path   = $config['path'] != '/' ? str_replace($config['path'], '', $_SERVER['REQUEST_URI']) : $config['path'];
-        $parts  = explode('/', $path);
-
-        if (trim($parts[0]) !== '') {
+	$path   = substr($_SERVER['REQUEST_URI'], strlen($config['path']));
+	$parts  = explode('/', $path);
+	
+	if (trim($parts[0]) !== '') {
             self::$_request['controller'] = $parts[0];
         }
 
