@@ -27,7 +27,7 @@ abstract class ElementAbstract {
 
         $this->_name       = $name;
         $this->_value      = $value;
-        $this->_label      = isset($options['label']) ? $options['label'] : ucfirst($name);
+        $this->_label      = isset($options['label']) ? $options['label'] : $name;
         $this->_attributes = array_merge($options['attributes'], $this->_attributes);
 
         foreach ($options['validators'] as $validator => $validatorOptions) {
