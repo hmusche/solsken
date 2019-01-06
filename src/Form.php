@@ -26,23 +26,29 @@ class Form {
 
     protected $_loadCallback;
 
-    protected $_id;
+    protected $_id = null;
 
     /**
-     * Array of Elements of current Form
-     * @var Array
+     * array of Elements of current Form
+     * @var array
      */
     protected $_elements = [];
 
     /**
+     * array of Groups of Elements
+     * @var array
+     */
+    protected $_groups = [];
+
+    /**
      * Aarray of occured errors
-     * @var Array
+     * @var array
      */
     protected $_errors = [];
 
     /**
      * Current posted data in form
-     * @var Array
+     * @var array
      */
     protected $_data = null;
 
@@ -54,13 +60,23 @@ class Form {
 
     /**
      * Default options for added elements
-     * @var Array
+     * @var array
      */
     protected $_defaultElement = [
         'name'    => 'input',
         'type'    => 'text',
         'value'   => null,
         'options' => []
+    ];
+
+    /**
+     * Default options for added groups
+     * @var array
+     */
+    protected $_defaultGroup = [
+        'name' => 'data',
+        'elements' => [],
+        'class' => ''
     ];
 
     /**
@@ -154,9 +170,9 @@ class Form {
 
     /**
      * Set Data
-     * @param Array $data  Optional, if null, we just get Params
+     * @param array $data  Optional, if null, we just get Params
      */
-    public function setData(Array $data = null) {
+    public function setData(array $data = null) {
         if (!$this->_data) {
             if ($data === null) {
                 $req = Request::getInstance();
@@ -193,7 +209,7 @@ class Form {
 
     /**
      * Fire Callback
-     * @param  Array $data Data to pass to method
+     * @param  array $data Data to pass to method
      * @return Mixed       Return of called method
      */
     public function fireCallback($data, $where = []) {
@@ -254,16 +270,49 @@ class Form {
 
         $this->_elements[$name] = $obj;
 
+        if (isset($element['group'])) {
+            if (!isset($this->_groups[$element['group']])) {
+                $this->addGroup($element['group'], []);
+            }
+
+            $this->_groups[$element['group']]['elements'][$name] = $obj;
+        }
+
         return $this;
     }
 
     /**
      * Add multiple elements
-     * @param Array $elements Array of element definitions
+     * @param array $elements array of element definitions
      */
-    public function addElements(Array $elements) {
+    public function addElements(array $elements) {
         foreach ($elements as $element) {
             $this->addElement($element);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Adds a group to the form, see $this->_defaultGroup for definition
+     * @param array $group
+     */
+    public function addGroup(array $group) {
+        $group = array_merge($this->_defaultGroup, $group);
+        $name  = $group['name'];
+
+        $this->_groups[$name] = $group;
+
+        return $this;
+    }
+
+    /**
+     * Add multiple groups
+     * @param array $groups
+     */
+    public function addGroups(array $groups) {
+        foreach ($groups as $group) {
+            $this->addGroup($group);
         }
 
         return $this;
@@ -279,7 +328,7 @@ class Form {
 
     /**
      * Return Form errors
-     * @return Array
+     * @return array
      */
     public function getErrors() {
         return $this->_errors;
@@ -294,7 +343,9 @@ class Form {
 
         return $view->partial('partial/form.phtml', [
             'elements' => $this->_elements,
+            'groups'   => $this->_groups,
             'formId'   => $this->_formId,
+            'hasData'  => $this->_id !== null,
             'errors'   => $this->getErrors(),
             'submit'   => new Submit('submit', [])
         ]);
