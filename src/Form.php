@@ -334,6 +334,16 @@ class Form {
         return $this->_errors;
     }
 
+    public function getLabel() {
+        if ($this->_loadCallback) {
+            return $this->_id === null
+                 ? 'add.' . $this->_formId
+                 : 'edit.' . $this->_formId;
+        }
+
+        return $this->_formId;
+    }
+
     /**
      * Magic method to render form with all elements
      * @return string
@@ -346,6 +356,7 @@ class Form {
             'groups'   => $this->_groups,
             'formId'   => $this->_formId,
             'hasData'  => $this->_id !== null,
+            'label'    => $this->getLabel(),
             'errors'   => $this->getErrors(),
             'submit'   => new Submit('submit', [])
         ]);
