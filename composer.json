@@ -11,7 +11,8 @@
     "require": {
         "catfan/Medoo": "^1.6",
         "punic/punic": "^3.3",
-        "ext-intl": "*"
+        "ext-intl": "*",
+        "ext-curl": "*"
     },
 	"autoload": {
 		"psr-4": {
