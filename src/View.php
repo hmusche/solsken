@@ -33,6 +33,8 @@ class View {
 
     public $webhost;
     public $path;
+    public $config;
+
 
     /**
      * Private constructor
@@ -40,6 +42,7 @@ class View {
     private function __construct() {
         $this->webhost  = Registry::get('app.config')['host'] . Registry::get('app.config')['path'];
         $this->path     = Request::getInstance()->get('path');
+        $this->config   = Registry::get('app.config');
     }
 
     /**
