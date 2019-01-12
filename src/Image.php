@@ -34,6 +34,38 @@ class Image {
                 break;
         }
 
+        $exif = exif_read_data($oldFile);
+
+        if (!empty($exif['Orientation'])) {
+            switch ($exif['Orientation']) {
+                case 3:
+                    $src = imagerotate($src, 180, 0);
+                    break;
+
+                case 6:
+                    $src = imagerotate($src, -90, 0);
+                    $tmp = $width;
+                    $width = $height;
+                    $height = $tmp;
+
+                    $tmp = $w;
+                    $w = $h;
+                    $h = $tmp;
+                    break;
+
+                case 8:
+                    $src = imagerotate($src, 90, 0);
+                    $tmp = $width;
+                    $width = $height;
+                    $height = $tmp;
+
+                    $tmp = $w;
+                    $w = $h;
+                    $h = $tmp;
+                    break;
+            }
+        }
+
         $dst = imagecreatetruecolor($width, $height);
         imagecopyresampled($dst, $src, 0, 0, 0, 0, $width, $height, $w, $h);
 
