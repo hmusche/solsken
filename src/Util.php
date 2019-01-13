@@ -19,6 +19,12 @@ class Util {
         return lcfirst($string);
     }
 
+    static public function getSlug($string) {
+        $string = transliterator_transliterate("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC; [:Punctuation:] Remove; Lower();", $string);
+        $string = str_replace(' ', '-', $string);
+        return $string;
+    }
+
     static public function getUniqueId() {
         return bin2hex(openssl_random_pseudo_bytes(8));
     }
