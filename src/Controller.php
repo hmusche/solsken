@@ -44,7 +44,7 @@ class Controller {
         $action = Util::toCamelCase($this->_request->get('action'));
         $method = $action . 'Action';
 
-        if (!method_exists($this, $method)) {
+        if (!is_callable([$this, $method])) {
             throw new \Exception("Unknown Action $action");
         }
 
