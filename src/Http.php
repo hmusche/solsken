@@ -25,6 +25,7 @@ class Http {
     }
 
     static public function setCacheHeader() {
-        
+        header('Cache-Control: public, max-age: 3600');
+        header('Pragma: cache');
     }
 }
