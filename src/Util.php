@@ -19,9 +19,15 @@ class Util {
         return lcfirst($string);
     }
 
-    static public function getSlug($string) {
+    static public function getSlug($string, $length = 0) {
         $string = transliterator_transliterate("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC; [:Punctuation:] Remove; Lower();", $string);
-        $string = str_replace(' ', '-', $string);
+
+        if ($length > 0 && strlen($string) > $length) {
+            $string = substr($string, 0, $length);
+        }
+
+        $string = trim(str_replace(' ', '-', $string));
+
         return $string;
     }
 
