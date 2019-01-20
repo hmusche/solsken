@@ -32,6 +32,7 @@ class View {
     protected $_helpers = [];
 
     public $webhost;
+    public $cdnhost;
     public $path;
     public $config;
 
@@ -41,6 +42,7 @@ class View {
      */
     private function __construct() {
         $this->webhost  = Registry::get('app.config')['host'] . Registry::get('app.config')['path'];
+        $this->cdnhost  = Registry::get('app.config')['cdnhost'] . Registry::get('app.config')['path'];
         $this->path     = Request::getInstance()->get('path');
         $this->config   = Registry::get('app.config');
     }
