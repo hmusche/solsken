@@ -25,7 +25,8 @@ class Http {
     }
 
     static public function setCacheHeader() {
-        header('Cache-Control: public, max-age: 3600');
+        header('Cache-Control: public, max-age: 86400');
         header('Pragma: cache');
+        header('Expires: ' .  gmdate('D, d M Y H:i:s ', strtotime('+1week')) . 'GMT');
     }
 }
