@@ -37,6 +37,7 @@ class Application {
 
             View::getInstance()->addHelper('t', [$i18n, 'translate']);
             View::getInstance()->addHelper('date', [$i18n, 'formatDate']);
+            View::getInstance()->addHelper('i18n', [$i18n, 'format']);
         }
     }
 

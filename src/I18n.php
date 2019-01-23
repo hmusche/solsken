@@ -2,6 +2,9 @@
 
 namespace Solsken;
 
+use Solsken\Util;
+use Punic\Territory;
+
 class I18n {
     static private $_instance = null;
 
@@ -69,6 +72,20 @@ class I18n {
 
     public function getSupportedLocales() {
         return $this->_supportedLocales;
+    }
+
+    public function format($type, ... $parameters) {
+        $method = 'format' . ucfirst(Util::toCamelCase($type));
+
+        if (!method_exists($this, $method)) {
+            throw new \Exception('Unknown method ' . $method);
+        }
+
+        return call_user_func_array([$this, $method], $parameters);
+    }
+
+    public function formatCountry($countryCode) {
+        return \Punic\Territory::getName(strtoupper($countryCode), $this->getLocale(false));
     }
 
     public function formatDate($dt, $format = 'medium') {
