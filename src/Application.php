@@ -23,8 +23,6 @@ class Application {
         Registry::set('app.config', $config);
         Registry::set('app.db', new Medoo($config['db']));
 
-        session_start();
-
         $this->_controller = Controller::getController($config['namespace']);
 
         $locale   = Cookie::get('locale_settings');
