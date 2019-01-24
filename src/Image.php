@@ -2,7 +2,18 @@
 
 namespace Solsken;
 
+/**
+ * Image class for operations on Images
+ */
 class Image {
+    /**
+     * Resize given image and save in new location
+     * @var string $oldFile     path and filename of image to resize
+     * @var string $newFile     path and filename of resized image
+     * @var int    $width       Width of new image in pixels
+     * @var int    $height      Height of new image in pixels, or retain current ratio if unprovided
+     * @return bool             True if operation was successful
+     */
     static public function resize($oldFile, $newFile, $width, $height = null) {
         if (!file_exists($oldFile)) {
             throw new \Exception("File $oldFile not found, can't resize");
@@ -34,6 +45,9 @@ class Image {
                 break;
         }
 
+        /**
+         * Get orientation from exif data
+         */
         $exif = exif_read_data($oldFile);
 
         if (!empty($exif['Orientation'])) {

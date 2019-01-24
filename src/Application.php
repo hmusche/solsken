@@ -28,7 +28,7 @@ class Application {
         $this->_controller = Controller::getController($config['namespace']);
 
         $locale   = Cookie::get('locale_settings');
-        $timezone = Cookie::get('timezone', isset($config['timezone']) ? $config['timezone'] : null);
+        $timezone = Cookie::get('timezone', isset($config['default_timezone']) ? $config['default_timezone'] : null);
 
         $i18n = I18n::getInstance($locale, $timezone);
 

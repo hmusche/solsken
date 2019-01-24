@@ -2,10 +2,10 @@
 
 namespace Solsken\Form\Validator;
 
-use Solsken\Form\Validator;
+use Solsken\Form\ValidatorAbstract;
 use Solsken\Request;
 
-class Match extends Validator {
+class Match extends ValidatorAbstract {
     protected $_error = 'not.matching';
 
     public function isValid($value) {

@@ -109,6 +109,11 @@ class View {
         $this->_data = [];
     }
 
+    /**
+     * Add helper function to class
+     * @param string $key
+     * @param mixed  $helper
+     */
     public function addHelper($key, $helper) {
         $this->_helpers[$key] = $helper;
     }
@@ -131,6 +136,12 @@ class View {
         return array_key_exists($key, $this->_data) ? $this->_data[$key] : null;
     }
 
+    /**
+     * Magic method to call defined helpers
+     * @param  string $method name of helper
+     * @param  array  $args
+     * @return mixed
+     */
     public function __call($method, $args) {
         if (isset($this->_helpers[$method])) {
             return call_user_func_array($this->_helpers[$method], $args);

@@ -5,6 +5,9 @@ namespace Solsken\Form;
 use Solsken\Util;
 use Solsken\View;
 
+/**
+ * Abstract class for Form elements
+ */
 abstract class ElementAbstract {
     protected $_name;
     protected $_attributes = [];

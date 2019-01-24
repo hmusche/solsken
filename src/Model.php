@@ -46,6 +46,11 @@ class Model {
         }
     }
 
+    /**
+     * Helper class to get a Select array from an ENUM column
+     * @param  string $column Name of ENUM column
+     * @return array          Array of enum values and theit translation keys
+     */
     public function getEnumSelect($column) {
         $result = $this->query("SHOW COLUMNS FROM {$this->_name} WHERE FIELD = '{$column}'")->fetch();
         $return = [];

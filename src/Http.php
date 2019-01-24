@@ -24,6 +24,9 @@ class Http {
         exit;
     }
 
+    /**
+     * Set some headers to ensure caching of content
+     */
     static public function setCacheHeader() {
         header('Cache-Control: public, max-age: 86400');
         header('Pragma: cache');

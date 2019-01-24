@@ -19,6 +19,12 @@ class Util {
         return lcfirst($string);
     }
 
+    /**
+     * Get Slug of given string
+     * @var string $string
+     * @var int    $length  If greater than zero, the slug will be cut
+     * @return string
+     */
     static public function getSlug($string, $length = 0) {
         $string = transliterator_transliterate("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC; [:Punctuation:] Remove; Lower();", $string);
 
@@ -31,10 +37,18 @@ class Util {
         return $string;
     }
 
+    /**
+     * Get hopefully really random good unique ID
+     * @return string
+     */
     static public function getUniqueId() {
         return bin2hex(openssl_random_pseudo_bytes(8));
     }
 
+    /**
+     * Check if user currently logged in in session
+     * @return bool
+     */
     static public function isLoggedIn() {
         return isset($_SESSION['user']);
     }

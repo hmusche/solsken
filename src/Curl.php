@@ -2,13 +2,25 @@
 
 namespace Solsken;
 
+/**
+ * Wrapper class for calling URLs via CURL and decode content
+ */
 class Curl {
     protected $_client;
 
+    /**
+     * Possible options for __construct and their default values
+     * @var array
+     */
     protected $_options = [
-        'url' => null
+        'url'    => null,
+        'format' => 'json'
     ];
 
+    /**
+     * Get the client and set the options
+     * @param array $options  See $this->_options
+     */
     public function __construct($options = []) {
         $this->_client = curl_init();
 
@@ -17,6 +29,11 @@ class Curl {
         $this->_options = array_merge($this->_options, $options);
     }
 
+    /**
+     * Call the optionally given URL, otherwise the URL statet in options, and return the content
+     * @param  String $url Optional URL to call
+     * @return Mixed       Return of call, can be formatted by "format" option, false if an error occured
+     */
     public function call($url = null) {
         if ($url === null) {
             $url = $this->_options['url'];

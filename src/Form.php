@@ -24,8 +24,16 @@ class Form {
      */
     protected $_callback;
 
+    /**
+     * Callback to call to load data from Model
+     * @var Callable
+     */
     protected $_loadCallback;
 
+    /**
+     * Primary ID of current dataset if known
+     * @var Int
+     */
     protected $_id = null;
 
     /**
@@ -158,6 +166,9 @@ class Form {
         return $this->_errors === [];
     }
 
+    /**
+     * Loads data from loadCallback if an ID was set, and sets data in form
+     */
     protected function _loadData() {
         if ($this->_loadCallback && $this->_id) {
             $data = call_user_func($this->_loadCallback, $this->_id);
@@ -242,6 +253,11 @@ class Form {
         return $this;
     }
 
+    /**
+     * Return Redirect URL
+     * @param  Int    $id Optional ID to append to URL
+     * @return String     Redirect URL
+     */
     public function getRedirect($id = null) {
         if ($this->_redirect) {
             return $this->_redirect;
