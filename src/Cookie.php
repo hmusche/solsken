@@ -26,7 +26,7 @@ class Cookie {
      * @return Mixed
      */
     static public function get($name, $default = null) {
-        return isset($_COOKIE[self::getKey($name)]) ? $_COOKIE['name'] : $default;
+        return isset($_COOKIE[self::getKey($name)]) ? $_COOKIE[self::getKey($name)] : $default;
     }
 
     /**
