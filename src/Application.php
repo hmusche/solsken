@@ -15,15 +15,15 @@ use Medoo\Medoo;
  */
 class Application {
     protected $_controller;
+    protected $_config;
 
     /**
      * Get Configuration and set in Registry, and create Controller class
      */
     public function __construct(array $config) {
+        $this->_config = $config;
         Registry::set('app.config', $config);
         Registry::set('app.db', new Medoo($config['db']));
-
-        $this->_controller = Controller::getController($config['namespace']);
 
         $locale   = Cookie::get('locale_settings');
         $timezone = Cookie::get('timezone', isset($config['default_timezone']) ? $config['default_timezone'] : null);
@@ -43,6 +43,19 @@ class Application {
      * Dispatch the controller
      */
     public function run() {
-        $this->_controller->dispatch();
+        try {
+            $this->_controller = Controller::getController($this->_config['namespace']);
+            $this->_controller->dispatch();
+        } catch (\Exception $e) {
+            if (isset($this->_config['throw_exceptions']) && $this->_config['throw_exceptions']) {
+                throw $e;
+            }
+
+            if ($e->getCode() >= 400) {
+                http_response_code($e->getCode());
+            } else {
+                http_response_code(500);
+            }
+        }
     }
 }

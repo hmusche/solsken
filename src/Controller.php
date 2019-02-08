@@ -29,9 +29,12 @@ class Controller {
     static public function getController($namespace) {
         $request = Request::getInstance();
 
-
-
         $controller = $namespace . '\\Controller\\' . ucfirst(Util::toCamelCase($request->get('controller')));
+
+        if (!class_exists($controller)) {
+            throw new \Exception('Unknown Controller', 404);
+        }
+
         $controller = new $controller;
 
         return $controller;
@@ -45,7 +48,7 @@ class Controller {
         $method = $action . 'Action';
 
         if (!is_callable([$this, $method])) {
-            throw new \Exception("Unknown Action $action");
+            throw new \Exception("Unknown Action $action", 404);
         }
 
         $this->preDispatch();
