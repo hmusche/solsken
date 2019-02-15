@@ -98,6 +98,8 @@ class Request {
             $currKey = false;
 
             foreach (array_slice($parts, 2) as $part) {
+                $part = urldecode($part);
+                
                 if ($currKey === false) {
                     $currKey = $part;
                 } else {
