@@ -86,10 +86,20 @@ abstract class ElementAbstract {
         return $this->_attributes;
     }
 
-    public function getAttributeString() {
+    public function getAttributeString($additional = []) {
         $parts = [];
 
-        foreach ($this->_attributes as $key => $value) {
+        $attributes = $this->_attributes;
+
+        foreach ($additional as $key => $value) {
+            if (isset($attributes[$key])) {
+                $attributes[$key] .= " " . $value;
+            } else {
+                $attributes[$key] = $value;
+            }
+        }
+
+        foreach ($attributes as $key => $value) {
             $parts[] = "$key=\"$value\"";
         }
 
