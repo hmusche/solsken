@@ -46,7 +46,7 @@ class I18n {
      */
     private function __construct($locale = null, $timezone = 'Europe/Berlin') {
         if ($locale === null) {
-            $locale = \Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+            $locale = \Locale::acceptFromHttp(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : 'en');
         }
 
         $this->_locale = $locale;
@@ -159,7 +159,7 @@ class I18n {
             $dt = \Punic\Calendar::toDateTime($dt);
         }
 
-        return \Punic\Calendar::formatDatetime($dt, $format, $this->getLocale(false));
+        return \Punic\Calendar::formatDatetime($dt, $format, $this->getLocale(true));
     }
 
     /**
@@ -203,13 +203,16 @@ class I18n {
      * @return string        Locale
      */
     public function getLocale($full = true) {
+        $locale = $this->_supportedLocales[0];
+
         if ($this->_locale) {
-            if (in_array($this->_locale, $this->_supportedLocales)
-             || in_array(substr($this->_locale, 0, 2), $this->_supportedLocales)) {
-                return $full ? $this->_locale : substr($this->_locale, 0, 2);
+            foreach ($this->_supportedLocales as $suppLocale) {
+                if (substr($this->_locale, 0, 2) == substr($suppLocale, 0, 2)) {
+                    $locale = $suppLocale;
+                }
             }
         }
 
-        return $this->_supportedLocales[0];
+        return $full ? $locale : substr($locale, 0, 2);
     }
 }
