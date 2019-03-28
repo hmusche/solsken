@@ -29,15 +29,7 @@ class Asset extends Controller {
 
         $assetPath = '';
 
-        $jsFiles = [
-            'jquery' => [
-                'vendor/components/jquery/jquery.min.js',
-                'vendor/twbs/bootstrap/dist/js/bootstrap.min.js',
-            ],
-            'base' => [
-                'js/main.js'
-            ]
-        ];
+        $jsFiles = Registry::get('app.config')['assets']['js'];
 
         foreach ($parts as $part) {
             $assetPath .= "$part/";
