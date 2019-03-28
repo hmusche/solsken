@@ -32,7 +32,12 @@ class Controller {
         $controller = $namespace . '\\Controller\\' . ucfirst(Util::toCamelCase($request->get('controller')));
 
         if (!class_exists($controller)) {
-            throw new \Exception('Unknown Controller', 404);
+            $namespace = 'Solsken';
+            $controller = $namespace . '\\Controller\\' . ucfirst(Util::toCamelCase($request->get('controller')));
+        }
+
+        if (!class_exists($controller)) {
+            throw new \Exception('Unknown Controller ' . $controller, 404);
         }
 
         $controller = new $controller;

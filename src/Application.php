@@ -23,7 +23,10 @@ class Application {
     public function __construct(array $config) {
         $this->_config = $config;
         Registry::set('app.config', $config);
-        Registry::set('app.db', new Medoo($config['db']));
+
+        if (isset($config['db'])) {
+            Registry::set('app.db', new Medoo($config['db']));
+        }
 
         $locale   = Cookie::get('locale_settings');
         $timezone = Cookie::get('timezone', isset($config['default_timezone']) ? $config['default_timezone'] : null);
