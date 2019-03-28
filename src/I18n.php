@@ -173,8 +173,8 @@ class I18n {
 
         switch ($this->_translationType) {
             case 'array':
-                if (isset($this->_translationSource[$locale]) && array_key_exists($string, $this->_translationSource[$locale])) {
-                    $string = $this->_translationSource[$locale][$string];
+                if (isset($this->_translationSource[$string]) && array_key_exists($locale, $this->_translationSource[$string])) {
+                    $string = $this->_translationSource[$string][$locale];
                 }
 
                 break;
