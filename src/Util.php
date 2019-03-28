@@ -52,4 +52,25 @@ class Util {
     static public function isLoggedIn() {
         return isset($_SESSION['user']);
     }
+
+    /**
+     * Get merged array of an array of files, each returning an array
+     */
+    static public function fileMerge($files) {
+        $result = [];
+        $dir    = '';
+
+        if (is_string($files)) {
+            $dir = "$files/";
+            $files = scandir($files);
+        }
+
+        foreach ($files as $file) {
+            if (substr($file, -4) == '.php' && is_readable($dir . $file)) {
+                $result = array_replace_recursive($result, require($dir . $file));
+            }
+        }
+
+        return $result;
+    }
 }

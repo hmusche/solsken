@@ -21,12 +21,18 @@ class Application {
      * Get Configuration and set in Registry, and create Controller class
      */
     public function __construct(array $config) {
-        $this->_config = $config;
-        Registry::set('app.config', $config);
+        if (!isset($config['environment']) || $config['environment'] == 'development') {
+            ini_set('display_errors', true);
+            ini_set('display_startup_errors', true);
+            error_reporting(E_ALL);
+        }
 
         if (isset($config['db'])) {
             Registry::set('app.db', new Medoo($config['db']));
         }
+
+        $this->_config = $config;
+        Registry::set('app.config', $config);
 
         $locale   = Cookie::get('locale_settings');
         $timezone = Cookie::get('timezone', isset($config['default_timezone']) ? $config['default_timezone'] : null);
