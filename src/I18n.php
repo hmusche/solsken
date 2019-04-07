@@ -149,6 +149,15 @@ class I18n {
     }
 
     /**
+     * Returns the translated full name of the given Locale
+     * @param  string $locale
+     * @return string
+     */
+    public function formatLanguage($locale) {
+        return \Punic\Language::getName($locale, $this->getLocale(false), false);
+    }
+
+    /**
      * Returns a formatted date string, according to format and current locale
      * @param  mixed  $dt     Either DateTime object or UNIX timestamp
      * @param  string $format Format to return
