@@ -27,7 +27,8 @@ class Request {
         'post' => [],
         'params' => [],
         'is_xhr' => false,
-        'method' => ''
+        'method' => '',
+        'headers' => []
     ];
 
     /**
@@ -87,19 +88,20 @@ class Request {
             self::$_request['action'] = $parts[1];
         }
 
-        self::$_request['path']   = $path;
-        self::$_request['is_xhr'] = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
-        self::$_request['method'] = strtolower($_SERVER['REQUEST_METHOD']);
-        self::$_request['get']    = $_GET;
-        self::$_request['post']   = $_POST;
-        self::$_request['params'] = array_merge($_GET, $_POST, $_FILES);
+        self::$_request['path']    = $path;
+        self::$_request['is_xhr']  = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
+        self::$_request['method']  = strtolower($_SERVER['REQUEST_METHOD']);
+        self::$_request['get']     = $_GET;
+        self::$_request['post']    = $_POST;
+        self::$_request['params']  = array_merge($_GET, $_POST, $_FILES);
+        self::$_request['headers'] = $_SERVER;
 
         if (count($parts) > 2) {
             $currKey = false;
 
             foreach (array_slice($parts, 2) as $part) {
                 $part = urldecode($part);
-                
+
                 if ($currKey === false) {
                     $currKey = $part;
                 } else {

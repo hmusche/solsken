@@ -27,9 +27,12 @@ class Http {
     /**
      * Set some headers to ensure caching of content
      */
-    static public function setCacheHeader() {
-        header('Cache-Control: public, max-age: 86400');
-        header('Pragma: cache');
-        header('Expires: ' .  gmdate('D, d M Y H:i:s ', strtotime('+1week')) . 'GMT');
+    static public function setCacheHeader($maxAge = null) {
+        if ($maxAge === null) {
+            $maxAge = 30 * 86400;
+        }
+
+        header('Cache-Control: public, max-age=' . $maxAge);
+        header('Expires: ' .  gmdate('D, d M Y H:i:s ', time() + $maxAge) . 'GMT');
     }
 }
