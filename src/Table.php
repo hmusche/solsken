@@ -111,7 +111,7 @@ class Table {
 
     /**
      * Get array of all rows for this table
-     * @return array 
+     * @return array
      */
     public function getRows() {
         $return = [];
