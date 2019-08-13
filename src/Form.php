@@ -62,9 +62,9 @@ class Form {
 
     /**
      * URL to redirect to after successful handling
-     * @var String
+     * @var string
      */
-    protected $_redirect;
+    protected $_redirect = '';
 
     /**
      * Default options for added elements
@@ -159,8 +159,8 @@ class Form {
             echo json_encode([
                 'status' => $this->_errors === [] && $return ? 'success' : 'error'
             ]);
-        } else if ($return && $this->_errors === []) {
-            Http::redirect($this->getRedirect($return));
+        } else if ($return && $this->_errors === [] && $redirect = $this->getRedirect($return)) {
+            Http::redirect($redirect);
         }
 
         return $this->_errors === [];
@@ -259,7 +259,7 @@ class Form {
      * @return String     Redirect URL
      */
     public function getRedirect($id = null) {
-        if ($this->_redirect) {
+        if ($this->_redirect !== '') {
             return $this->_redirect;
         }
 
