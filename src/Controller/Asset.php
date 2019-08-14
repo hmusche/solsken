@@ -45,6 +45,8 @@ class Asset extends Controller {
                 if ($type == 'base') {
                     if (file_exists('template/' . $file)) {
                         $output .= $this->_view->partial($file);
+                    } else if (file_exists($file)) {
+                        $output .= $this->_view->partial($file);
                     }
                 } else {
                     if (file_exists($file)) {

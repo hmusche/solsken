@@ -73,7 +73,7 @@ class View {
     public function render($template = null) {
         if ($template === null) {
             $template = 'template/main.phtml';
-        } else {
+        } else if (file_exists('template/' . $template)) {
             $template = 'template/' . $template;
         }
 
