@@ -5,16 +5,16 @@ namespace Solsken\Formatter;
 use Solsken\I18n;
 
 /**
- * Format given date according to current locale
+ * Translate string
  */
 class Translate extends FormatterAbstract {
     /**
-     * Default options for date formatter
+     * Default options for translate formatter
      * @var array
      */
     protected $_config = [
-        'date' => 'short',
-        'time' => 'short'
+        'prefix' => '',
+        'suffix' => ''
     ];
 
     /**
@@ -27,6 +27,6 @@ class Translate extends FormatterAbstract {
 
         $dateFmt = null;
 
-        return $i18n->translate($value);
+        return $i18n->translate($this->_config['prefix'] . $value . $this->_config['suffix']);
     }
 }
