@@ -93,8 +93,13 @@ class Request {
         self::$_request['method']  = strtolower($_SERVER['REQUEST_METHOD']);
         self::$_request['get']     = $_GET;
         self::$_request['post']    = $_POST;
+        self::$_request['raw']     = file_get_contents('php://input');
         self::$_request['params']  = array_merge($_GET, $_POST, $_FILES);
         self::$_request['headers'] = $_SERVER;
+
+        if ($json = json_decode(self::$_request['raw'], true)) {
+            self::$_request['params'] = array_merge(self::$_request['params'], $json);
+        }
 
         if (count($parts) > 2) {
             $currKey = false;
