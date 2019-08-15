@@ -33,11 +33,19 @@ class Column {
     }
 
     /**
-     * Get Label of clumns
+     * Get Label of column
      * @return string
      */
     public function getLabel() {
         return $this->_config['label'] ?: $this->_config['key'];
+    }
+
+    /**
+     * Return the key of column
+     * @return string
+     */
+    public function getKey() {
+        return $this->_config['key'];
     }
 
     /**

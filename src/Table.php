@@ -3,11 +3,22 @@
 namespace Solsken;
 
 use Solsken\Table\Column;
+use Solsken\Table\Data;
+use Solsken\Request;
+use Solsken\View;
+use Solsken\Registry;
+use Solsken\Cookie;
 
 /**
  * Generates Table of information from array
  */
 class Table {
+    /**
+     * Identifier for this table
+     * @var string
+     */
+    protected $_identifier;
+
     /**
      * Array of columns in table
      * @var array
@@ -31,6 +42,32 @@ class Table {
      * @var array
      */
     protected $_rowAction = [];
+
+    /**
+     * Current configuration of table
+     * @var array $_tableConfig
+     */
+    protected $_tableConfig = [];
+
+    /**
+     * Construct Table instance, optionally named for uniqueness
+     * @param string $identifier
+     */
+    public function __construct($identifier = null) {
+        if ($identifier) {
+            $this->_identifier = $identifier;
+        } else {
+            $this->_identifier = uniqid();
+        }
+    }
+
+    /**
+     * Return identifier
+     * @return string
+     */
+    public function getIdentifier() {
+        return $this->_identifier;
+    }
 
     /**
      * Add several Columns to table
@@ -98,6 +135,10 @@ class Table {
      * @param array $data Data is collected by names of columns, and should be present in nested array
      */
     public function setData($data) {
+        if ($data instanceof Model) {
+            $data = new Data($data);
+        }
+
         $this->_data = $data;
     }
 
@@ -162,7 +203,93 @@ class Table {
         return $return;
     }
 
+    /**
+     * Returns total number of rows
+     * @return int
+     */
+    public function getTableConfig() {
+        return $this->_tableConfig;
+    }
 
+    /**
+     * Get the data from the Data Model according to set filters, and return the proper output
+     * @return string
+     */
+    public function handle() {
+        if ($this->_data instanceof Data) {
+            $req       = Request::getInstance();
+            $config    = Registry::get('app.config');
+            $perPage   = isset($config['table']['per_page']) ? $config['table']['per_page'] : 20;
+            $maxPages  = isset($config['table']['max_pages']) ? $config['table']['max_pages'] : 9;
 
+            $totalRows = $this->_data->getTotalResults();
+
+            $defaults = [
+                'filter' => [],
+                'order'  => [],
+                'page'   => 1
+            ];
+
+            $tableConfig = json_decode(Cookie::get($this->_identifier . '_config', '[]'), true);
+
+            foreach ($defaults as $key => $value) {
+                if (isset($tableConfig[$this->_identifier . '_' . $key])) {
+                    $defaults[$key] = $tableConfig[$this->_identifier . '_' . $key];
+                }
+
+                $$key = $req->getParam($this->_identifier . '_' . $key, $defaults[$key]);
+            }
+
+            $limit  = [($page - 1) * $perPage, $perPage];
+
+            $this->_data->setLimit($limit);
+            $this->_data->setOrder($order);
+
+            $totalPages = ceil($totalRows / $perPage);
+
+            if ($page <= ($maxPages - 1) / 2) {
+                $fromPage = 1;
+            } else if ($page > ($totalPages - (($maxPages - 1) / 2))) {
+                $fromPage = $totalPages - $maxPages + 1;
+            } else {
+                $fromPage = $page - (($maxPages - 1) / 2);
+            }
+
+            $this->_tableConfig = [
+                'pagination' => [
+                    'per_page'    => $perPage,
+                    'total_rows'  => $totalRows,
+                    'total_pages' => $totalPages,
+                    'max_pages'   => $maxPages,
+                    'page'        => $page,
+                    'pages_from'  => $fromPage
+                ],
+                'filter'      => $filter,
+                'order'       => $order
+            ];
+        }
+
+        if ($req->get('is_xhr')) {
+            header('Content-Type: application/javascript');
+            echo json_encode([
+                'status' => 'success',
+                'html' => $this->render()
+            ]);
+
+            exit;
+        } else {
+            return $this->render();
+        }
+    }
+
+    /**
+     * Returns a rendered string of current table
+     * @return string
+     */
+    public function render() {
+        $view   = View::getInstance();
+
+        return $view->partial('template/partial/table.phtml', ['table' => $this]);
+    }
 
 }
