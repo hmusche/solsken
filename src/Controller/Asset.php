@@ -27,7 +27,7 @@ class Asset extends Controller {
             $req->getParam('a')
         ];
 
-        $assetPath = '';
+        $assetPath = 'template/';
 
         $jsFiles = Registry::get('app.config')['assets']['js'];
 
