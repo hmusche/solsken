@@ -2,7 +2,7 @@
     win.Solsken = win.Solsken || {};
 
     win.Solsken.Cookie = function() {
-        this.prefix = 'SLKSN';
+        this.prefix = 'SLSKN';
     }
 
     win.Solsken.Cookie.prototype = {
