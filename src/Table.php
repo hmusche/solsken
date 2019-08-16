@@ -50,6 +50,12 @@ class Table {
     protected $_tableConfig = [];
 
     /**
+     * Where condition for data Model
+     * @var array
+     */
+    protected $_where = [];
+
+    /**
      * Construct Table instance, optionally named for uniqueness
      * @param string $identifier
      */
@@ -116,7 +122,7 @@ class Table {
 
     /**
      * Check if table has actions
-     * @return boolean
+     * @return bool
      */
     public function hasActions() {
         return $this->_actions !== [];
@@ -124,7 +130,7 @@ class Table {
 
     /**
      * Check if table has row action
-     * @return boolean
+     * @return bool
      */
     public function hasRowAction() {
         return $this->_rowAction !== [];
@@ -140,6 +146,16 @@ class Table {
         }
 
         $this->_data = $data;
+    }
+
+    /**
+     * Set WHERE condition for data Model
+     * @param array $where
+     */
+    public function setWhere($where) {
+        if ($this->_data instanceof Model) {
+            $this->_where = $where;
+        }
     }
 
     /**
@@ -222,7 +238,9 @@ class Table {
             $perPage   = isset($config['table']['per_page']) ? $config['table']['per_page'] : 20;
             $maxPages  = isset($config['table']['max_pages']) ? $config['table']['max_pages'] : 9;
 
-            $totalRows = $this->_data->getTotalResults();
+            if ($req->getParam('table_identifier', $this->getIdentifier()) != $this->getIdentifier()) {
+                return;
+            }
 
             $defaults = [
                 'filter' => [],
@@ -240,12 +258,34 @@ class Table {
                 $$key = $req->getParam($this->_identifier . '_' . $key, $defaults[$key]);
             }
 
-            $limit  = [($page - 1) * $perPage, $perPage];
+            $where  = $this->_where;
 
-            $this->_data->setLimit($limit);
+            foreach ($this->getColumns() as $column) {
+                if (($filterClass = $column->getFilter()) && isset($filter[$column->getKey()])) {
+                    $filterClass = '\\Solsken\\Table\\Filter\\'. ucfirst($filterClass);
+                    $filterClass = new $filterClass;
+
+                    $where = $filterClass->apply($where, $column->getKey(), $filter[$column->getKey()]);
+                }
+
+                if (!$order && $columnOrder = $column->getOrder()) {
+                    $order[$column->getKey()] = $columnOrder;
+                }
+            }
+
             $this->_data->setOrder($order);
+            $this->_data->setWhere($where);
+
+            $totalRows = $this->_data->getTotalResults();
 
             $totalPages = ceil($totalRows / $perPage);
+
+            if ($page > $totalPages) {
+                $page = $totalPages;
+            }
+
+            $limit = [($page - 1) * $perPage, $perPage];
+            $this->_data->setLimit($limit);
 
             if ($page <= ($maxPages - 1) / 2) {
                 $fromPage = 1;
@@ -287,7 +327,7 @@ class Table {
      * @return string
      */
     public function render() {
-        $view   = View::getInstance();
+        $view = View::getInstance();
 
         return $view->partial('template/partial/table.phtml', ['table' => $this]);
     }

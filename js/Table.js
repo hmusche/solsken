@@ -1,12 +1,16 @@
 (function(win, doc) {
     win.Solsken = win.Solsken || {};
 
-    win.Solsken.Table = function(table) {
-        this.table  = table;
-        this.identifier = this.table.getAttribute('data-identifier');
-        this.dom    = new win.Solsken.DOM();
-        this.cookie = new win.Solsken.Cookie();
-        this.config = JSON.parse(this.cookie.get(this.identifier + '_config', '{}'));
+    win.Solsken.Table = function(wrapper) {
+        this.dom        = new win.Solsken.DOM();
+        this.wrapper    = wrapper;
+        this.table      = this.dom.getElement('table', wrapper);
+        this.identifier = this.wrapper.getAttribute('data-identifier');
+        this.cookie     = new win.Solsken.Cookie();
+        this.config     = JSON.parse(this.cookie.get(this.identifier + '_config', '{}'));
+
+        this.config.table_identifier = this.identifier;
+
         this.initEvents();
     };
 
@@ -19,7 +23,9 @@
             var req = new win.Solsken.Request({
                 success: function(res) {
                     if (res.status == 'success') {
-                        self.table.innerHTML = res.html;
+                        self.wrapper.innerHTML = res.html;
+                        self.table             = self.dom.getElement('table', self.wrapper);
+
                         self.initEvents();
                     }
                 }
@@ -47,7 +53,7 @@
             }
 
             // Click on pagination
-            var pages = this.dom.getElements('a[data-page]');
+            var pages = this.dom.getElements('a[data-page]', this.wrapper);
 
             for (i = 0; i < pages.length; i++) {
                 pages[i].addEventListener('click', function(event) {
@@ -60,7 +66,7 @@
             }
 
             // Click on Order
-            var orders = this.dom.getElements('a[data-order]');
+            var orders = this.dom.getElements('a[data-order]', this.wrapper);
 
             for (i = 0; i < orders.length; i++) {
                 orders[i].addEventListener('click', function(event) {
@@ -85,6 +91,26 @@
 
                     self.update();
                 });
+            }
+
+            // Filters
+            var filters = this.dom.getElements('.column-filter', this.wrapper);
+
+            for (i = 0; i < filters.length; i++) {
+
+                switch (filters[i].tagName.toLowerCase()) {
+                    case 'input':
+                        filters[i].addEventListener('keyup', function(event) {
+                            if (event.keyCode == 13) {
+                                var key = this.getAttribute('data-key');
+
+                                self.config[self.identifier + '_filter'] = self.config[self.identifier + '_filter'] || {};
+                                self.config[self.identifier + '_filter'][key] = this.value;
+                                self.update();
+                            }
+                        });
+                        break;
+                }
             }
         }
     };
