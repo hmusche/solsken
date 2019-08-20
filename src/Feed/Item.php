@@ -19,7 +19,12 @@ class Item extends NodeAbstract {
             'type' => 'multiple'
         ],
         'enclosure' => [
-            'type' => 'single'
+            'type' => 'empty',
+            'attributes' => [
+                'url',
+                'type',
+                'length'
+            ]
         ],
         'guid' => [
             'type' => 'single'
@@ -38,8 +43,25 @@ class Item extends NodeAbstract {
 
     public function getDom() {
         foreach ($this->_elements as $element => $value) {
-            $element = $this->_xml->createElement($element, $value);
-            $this->_root->appendChild($element);
+            if (is_array($value)) {
+                if (isset($value['attributes'])) {
+                    $element = $this->_xml->createElement($element, $value['value']);
+
+                    foreach ($value['attributes'] as $attribute => $value) {
+                        $element->setAttribute($attribute, $value);
+                    }
+
+                    $this->_root->appendChild($element);
+                } else {
+                    foreach ($value as $val) {
+                        $element = $this->_xml->createElement($element, $val);
+                        $this->_root->appendChild($element);
+                    }
+                }
+            } else {
+                $element = $this->_xml->createElement($element, $value);
+                $this->_root->appendChild($element);
+            }
         }
 
         $this->_xml->appendChild($this->_root);

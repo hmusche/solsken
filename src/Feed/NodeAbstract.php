@@ -36,6 +36,8 @@ abstract class NodeAbstract {
         $type = substr($method, 0, 3);
         $element = lcfirst(str_replace($type, '', $method));
 
+        $value = $value[0];
+
         if (!property_exists($this, '_optionalElements')
             || !in_array($type, ['get', 'set'])
             || !array_key_exists($element, $this->_optionalElements)) {
@@ -44,18 +46,35 @@ abstract class NodeAbstract {
 
         if ($type == 'set') {
             switch ($this->_optionalElements[$element]['type']) {
+                case 'empty':
+                    $this->_elements[$element] = '';
+                    break;
                 case 'single':
-                    $this->_elements[$element] = $value[0];
+                    $this->_elements[$element] = $value;
                     break;
                 case 'multiple':
                     if (!isset($this->_elements[$element])) {
                         $this->_elements[$element] = [];
                     }
 
-                    $this->_elements[$element][] = $value[0];
+                    $this->_elements[$element][] = $value;
                     break;
             }
 
+            if (isset($this->_optionalElements[$element]['attributes'])) {
+                $this->_elements[$element] = [
+                    'value' => $this->_elements[$element],
+                    'attributes' => []
+                ];
+
+                foreach ($this->_optionalElements[$element]['attributes'] as $attribute) {
+                    if (!isset($value[$attribute])) {
+                        throw new \Exception("Please provide $attribute Attribute");
+                    }
+
+                    $this->_elements[$element]['attributes'][$attribute] = $value[$attribute];
+                }
+            }
 
             return $this;
         } elseif ($type == 'get') {
