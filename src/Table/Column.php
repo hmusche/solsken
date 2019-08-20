@@ -15,7 +15,9 @@ class Column {
     protected $_config = [
         'key'        => '',
         'label'      => '',
-        'formatters' => []
+        'formatters' => [],
+        'filter'     => '',
+        'order'      => ''
     ];
 
     /**
@@ -46,6 +48,22 @@ class Column {
      */
     public function getKey() {
         return $this->_config['key'];
+    }
+
+    /**
+     * Return defined filter for column
+     * @return string
+     */
+    public function getFilter() {
+        return $this->_config['filter'];
+    }
+
+    /**
+     * Return Order configuration of column
+     * @return array
+     */
+    public function getOrder() {
+        return $this->_config['order'];
     }
 
     /**
