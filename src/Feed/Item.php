@@ -32,6 +32,10 @@ class Item extends NodeAbstract {
         ]
     ];
 
+    public function setPubDate($time) {
+        $this->_elements['pubDate'] = gmdate("D, d M Y H:m:s \G\M\T", $time);
+    }
+
     public function getDom() {
         foreach ($this->_elements as $element => $value) {
             $element = $this->_xml->createElement($element, $value);
