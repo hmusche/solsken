@@ -57,7 +57,11 @@ abstract class NodeAbstract {
                         $this->_elements[$element] = [];
                     }
 
-                    $this->_elements[$element][] = $value;
+                    if (is_array($value)) {
+                        $this->_elements[$element] = $value;
+                    } else {
+                        $this->_elements[$element][] = $value;
+                    }
                     break;
             }
 

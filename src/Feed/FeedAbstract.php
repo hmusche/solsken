@@ -25,6 +25,7 @@ abstract class FeedAbstract extends NodeAbstract {
 
     public function getDom() {
         $this->_root->setAttribute('version', '2.0');
+        $this->_root->setAttribute('xmlns:dc', 'http://purl.org/dc/elements/1.1/');
         $feed = $this->_xml->createElement('channel') ;
 
         foreach ($this->_elements as $element => $value) {

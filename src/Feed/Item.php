@@ -15,6 +15,9 @@ class Item extends NodeAbstract {
         'author' => [
             'type' => 'single'
         ],
+        'dc:creator' => [
+            'type' => 'single'
+        ],
         'category' => [
             'type' => 'multiple'
         ],
@@ -54,8 +57,8 @@ class Item extends NodeAbstract {
                     $this->_root->appendChild($element);
                 } else {
                     foreach ($value as $val) {
-                        $element = $this->_xml->createElement($element, $val);
-                        $this->_root->appendChild($element);
+                        $elem = $this->_xml->createElement($element, $val);
+                        $this->_root->appendChild($elem);
                     }
                 }
             } else {

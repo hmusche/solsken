@@ -5,8 +5,6 @@ namespace Solsken\Feed;
 class Rss extends FeedAbstract {
     protected $_rootName = 'rss';
 
-    protected $_xmlHeaderString = '<?xml version="1.0"?><rss version="2.0"></rss>';
-
     protected $_optionalElements = [
         'language' => [
             'type' => 'single'
