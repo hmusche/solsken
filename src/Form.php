@@ -67,6 +67,12 @@ class Form {
     protected $_redirect = '';
 
     /**
+     * Optional options for rendering
+     * @var array
+     */
+    protected $_options = [];
+
+    /**
      * Default options for added elements
      * @var array
      */
@@ -96,6 +102,14 @@ class Form {
     public function __construct($formId, $callback) {
         $this->_formId   = $formId;
         $this->_callback = $callback;
+    }
+
+    /**
+     * Set Options for rendering
+     * @param array $options
+     */
+    public function setOptions($options) {
+        $this->_options = $options;
     }
 
     /**
@@ -280,9 +294,10 @@ class Form {
      */
     public function addElement(array $element) {
         $element = array_merge($this->_defaultElement, $element);
-        $class   = "\\Solsken\\Form\\Element\\" . ucfirst(Util::toCamelCase($element['type']));
         $name    = $element['name'];
-        $obj     = new $class($name, $element['options'], $element['value']);
+        $obj     = Util::getInstanceFromClassPath([
+            'Form', 'Element', ucfirst(Util::toCamelCase($element['type']))
+        ], [$name, $element['options'], $element['value']]);
 
         $this->_elements[$name] = $obj;
 
@@ -374,7 +389,8 @@ class Form {
             'hasData'  => $this->_id !== null,
             'label'    => $this->getLabel(),
             'errors'   => $this->getErrors(),
-            'submit'   => new Submit('submit', [])
+            'submit'   => new Submit('submit', []),
+            'options'  => $this->_options
         ]);
     }
 }
