@@ -33,7 +33,7 @@ class Asset extends Controller {
 
         foreach ($parts as $part) {
             $assetPath .= "$part/";
-            $jsFiles['base'][] = $assetPath . '/script.js';
+            $jsFiles['sub'][] = $assetPath . '/script.js';
         }
 
         $output = '';
@@ -42,7 +42,7 @@ class Asset extends Controller {
 
         if (isset($jsFiles[$type])) {
             foreach ($jsFiles[$type] as $file) {
-                if ($type == 'base') {
+                if ($type == 'base' || $type == 'sub') {
                     if (file_exists('template/' . $file)) {
                         $output .= $this->_view->partial($file);
                     } else if (file_exists($file)) {
