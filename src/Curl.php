@@ -29,6 +29,13 @@ class Curl {
         $this->_options = array_merge($this->_options, $options);
     }
 
+    public function setPostData($data) {
+        curl_setopt($this->_client, CURLOPT_POST, 1);
+        curl_setopt($this->_client, CURLOPT_POSTFIELDS, http_build_query($data));
+
+        return $this;
+    }
+
     /**
      * Call the optionally given URL, otherwise the URL statet in options, and return the content
      * @param  String $url Optional URL to call
