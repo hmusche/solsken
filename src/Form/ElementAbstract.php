@@ -35,10 +35,13 @@ abstract class ElementAbstract {
 
         foreach ($options['validators'] as $validator => $validatorOptions) {
             if ($validatorOptions !== false) {
-                $validatorClass = "\\Solsken\\Form\\Validator\\" . ucfirst(Util::toCamelCase($validator));
                 $validatorHash = serialize($validatorOptions) . $validator;
 
-                $this->_validators[$validatorHash] = new $validatorClass($validatorOptions);
+                $this->_validators[$validatorHash] = Util::getInstanceFromClassPath([
+                    'Form',
+                    'Validator',
+                    ucfirst(Util::toCamelCase($validator))
+                ], [$validatorOptions]);
             }
         }
 

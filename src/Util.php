@@ -73,4 +73,22 @@ class Util {
 
         return $result;
     }
+
+    static public function getInstanceFromClassPath(array $classPath, $arguments = null, $errorCode = 1) {
+        $namespace = Registry::get('app.config')['namespace'];
+        $class     = implode('\\', array_merge([$namespace], $classPath));
+
+        if (!class_exists($class)) {
+            $namespace = 'Solsken';
+            $class     = implode('\\', array_merge([$namespace], $classPath));
+        }
+
+        if (!class_exists($class)) {
+            throw new \Exception('Unknown class ' . $class, $errorCode);
+        }
+
+        $reflection = new \ReflectionClass($class);
+
+        return $reflection->newInstanceArgs($arguments);
+    }
 }

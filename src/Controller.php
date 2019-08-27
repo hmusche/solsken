@@ -29,18 +29,12 @@ class Controller {
     static public function getController($namespace) {
         $request = Request::getInstance();
 
-        $controller = $namespace . '\\Controller\\' . ucfirst(Util::toCamelCase($request->get('controller')));
+        $classPath = [
+            'Controller',
+            ucfirst(Util::toCamelCase($request->get('controller')))
+        ];
 
-        if (!class_exists($controller)) {
-            $namespace = 'Solsken';
-            $controller = $namespace . '\\Controller\\' . ucfirst(Util::toCamelCase($request->get('controller')));
-        }
-
-        if (!class_exists($controller)) {
-            throw new \Exception('Unknown Controller ' . $controller, 404);
-        }
-
-        $controller = new $controller;
+        $controller = Util::getInstanceFromClassPath($classPath, [], 404);
 
         return $controller;
     }
