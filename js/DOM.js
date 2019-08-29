@@ -98,6 +98,14 @@
             if (this.hasClass(element, className)) {
                 element.className = element.className.replace(regex, '');
             }
+        },
+
+        toggleClass: function(element, className) {
+            if (this.hasClass(element, className)) {
+                this.removeClass(element, className);
+            } else {
+                this.addClass(element, className);
+            }
         }
     };
 })(window, document);
