@@ -12,6 +12,12 @@
             dom.getParent('.cookie-notice', elem).style.display = 'none';
         },
 
+        declineCookie: function(elem) {
+            var dom = new Solsken.DOM();
+            this.set('accept', 0);
+            dom.getParent('.cookie-notice', elem).style.display = 'none';
+        },
+
         getKey: function(key) {
             return this.prefix + '---' + key;
         },
