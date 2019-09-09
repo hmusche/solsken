@@ -38,7 +38,7 @@ class Sitemap {
         $lastmod    = $lastmod ?: time();
         $lastmod    = date('Y-m-d\TH:i:s\Z', $lastmod);
 
-        $urlElement->appendChild($this->_xml->createElement('loc', $url));
+        $urlElement->appendChild($this->_xml->createElement('loc', htmlspecialchars($url)));
         $urlElement->appendChild($this->_xml->createElement('lastmod', $lastmod));
         $urlElement->appendChild($this->_xml->createElement('changefreq', $freq));
         $urlElement->appendChild($this->_xml->createElement('priority', $prio));
