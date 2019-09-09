@@ -224,4 +224,8 @@ class I18n {
 
         return $full ? $locale : substr($locale, 0, 2);
     }
+
+    public function setLocale($locale) {
+        $this->_locale = $locale;
+    }
 }
