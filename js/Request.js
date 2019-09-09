@@ -36,13 +36,19 @@
 
             this.xmlreq.onreadystatechange = function() {
                 if (self.xmlreq.readyState == XMLHttpRequest.DONE) {
-                    var response = self.xmlreq.responseText;
+                    var response = self.xmlreq.responseText,
+                        success = true;
 
                     if (self.config.type == 'json') {
-                        response = JSON.parse(response);
+                        try {
+                            response = JSON.parse(response);
+                        } catch (e) {
+                            success = false;
+                        }
+
                     }
 
-                    if (self.xmlreq.status == 200) {
+                    if (self.xmlreq.status == 200 && success) {
                         self.config.success(response);
                     } else {
                         self.config.error(response);
