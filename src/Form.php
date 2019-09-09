@@ -110,6 +110,8 @@ class Form {
      */
     public function setOptions($options) {
         $this->_options = $options;
+
+        return $this;
     }
 
     /**
