@@ -130,6 +130,17 @@ class Form {
         }
 
         /**
+         * If Request is XHR, only allow actually set elements
+         */
+        if ($req->get('is_xhr')) {
+            foreach ($this->_elements as $key => $element) {
+                if ($req->getParam($key, false) === false) {
+                    unset($this->_elements[$key]);
+                }
+            }
+        }
+
+        /**
          * Set Data to all elements
          */
         $this->setData();
@@ -173,6 +184,7 @@ class Form {
             echo json_encode([
                 'status' => $this->_errors === [] && $return ? 'success' : 'error'
             ]);
+            exit;
         } else if ($return && $this->_errors === [] && $redirect = $this->getRedirect($return)) {
             Http::redirect($redirect);
         }
