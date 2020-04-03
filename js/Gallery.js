@@ -7,8 +7,11 @@
         this.imageContainer = this.dom.getElement('.image-wrapper', gallery);
         this.galleryWrapper = this.dom.getElement('.gallery-wrapper', gallery);
         this.controls = this.dom.getElement('.gallery-controls', gallery);
+        this.playvideo = this.dom.getElement('.gallery-playvideo-button');
         this.offset = 0;
         this.currentIndex = 0;
+        this.maxRatio     = 3;
+        this.getFullscreenPrefixes();
         this.setImages();
         this.cookie = new Solsken.Cookie();
     }
@@ -36,77 +39,133 @@
 
             this.images = this.dom.getElements('.gallery-image-wrapper', this.galleryWrapper);
             this.loadedImages = 0;
-            this.maxRatio     = 100;
+
+            this.setSizes(true);
 
             for (i = 0; i < this.images.length; i++) {
                 (function(div) {
                     var imgSec = div.getAttribute('data-src').replace('{size}', currentSize),
-                        subtitle = div.getAttribute('data-subtitle');
+                        subtitle = div.getAttribute('data-subtitle'),
+                        filetype = div.getAttribute('data-filetype');
 
-                    self.dom.createElement('img', {
-                        'src': imgSec,
-                        'events': {
-                            'load': function() {
-                                self.loadedImages++;
+                    if (!self.dom.hasClass(self.controls, 'done')) {
 
-                                div.style['background-image'] = 'url(' + imgSec + ')';
+                        self.dom.inject(self.dom.createElement('div', {
+                            'class': 'gallery-bullet',
+                            'data-index': i
+                        }), self.dom.getElement('.gallery-bullets', self.controls));
+                    }
 
-                                if (subtitle) {
-                                    var sub = self.dom.createElement('div', {
-                                        'class': 'subtitle',
-                                        'text' : subtitle
-                                    })
+                    if (filetype.indexOf('image') === 0) {
+                        var loader = self.dom.getElement('.loader', div);
+                        loader && self.dom.removeClass(loader, 'd-none');
+                        self.dom.createElement('img', {
+                            'src': imgSec,
+                            'events': {
+                                'load': function() {
+                                    self.loadedImages++;
 
-                                    self.dom.inject(sub, div);
+                                    div.style['background-image'] = 'url(' + imgSec + ')';
+
+                                    loader && loader.remove()
+                                    this.remove();
+
+                                    if (subtitle) {
+                                        var sub = self.dom.createElement('div', {
+                                            'class': 'subtitle',
+                                            'text' : subtitle
+                                        });
+
+                                        self.dom.inject(sub, div);
+                                    }
+
+                                    if ((this.height / this.width) < self.maxRatio) {
+                                        self.maxRatio = (this.height / this.width);
+                                    }
+
+                                    self.setSizes();
                                 }
-
-                                if ((this.height / this.width) < self.maxRatio) {
-                                    self.maxRatio = (this.height / this.width);
-                                }
-
-                                if (self.loadedImages == self.images.length) {
-                                    self.initGallery();
-                                }
-
-                                //delete this;
                             }
+                        });
+                    } else if (filetype.indexOf('video') === 0 && !div.hasClass('video-done')) {
+                        var vid = self.dom.createElement('video', {
+                            'src': imgSrc,
+                            'controls': false
+                        });
+        
+                        var progressWrapper = self.dom.createElement('div', {
+                            'class': 'progress-wrapper'
+                        });
+        
+                        var progress = self.dom.createElement('div', {
+                            'class': 'progress'
+                        });
+        
+                        self.dom.inject(progress, progressWrapper);
+        
+                        if (vid.addEventListener) {
+                            vid.addEventListener('canplay', function() {
+                                div.getElement('.loader') && div.getElement('.loader').addClass('d-none');
+        
+                                if (!vid.retrieve('playing')) {
+                                    self.playvideo.removeClass('d-none');
+                                }
+                            });
+        
+                            vid.addEventListener('waiting', function() {
+                                div.getElement('.loader') && div.getElement('.loader').removeClass('d-none');
+        
+                            });
+        
+                            vid.addEventListener('playing', function() {
+                                div.getElement('.loader') && div.getElement('.loader').addClass('d-none');
+                            });
+        
+                            vid.addEventListener('ended', function() {
+                                self.toggleVideo(true);
+                            });
+        
+                            vid.addEventListener('timeupdate', function(event) {
+                                if (this.duration && this.currentTime) {
+                                    var ratio = this.currentTime / this.duration * 100,
+                                        progress = this.getPrevious().getElement('.progress');
+        
+                                    progress.setStyle('width', ratio + '%');
+                                }
+        
+                            });
                         }
-                    });
+        
+                        self.loadedImages++;
+                        progressWrapper.inject(div);
+                        vid.inject(div);
+        
+                        if (subtitle) {
+                            new Element('div', {
+                                'class': 'subtitle',
+                                'text' : subtitle
+                            }).inject(div);
+                        }
+        
+                        div.addClass('video-done');
+                    }
                 })(this.images[i]);
             }
-        },
 
-        initGallery: function() {
-            var self = this,
-                swipeHintCount = this.cookie.get('swipehint', 0),
-                loader = this.dom.getElement('.loader', this.gallery);
-
-            this.setSizes();
             this.initEvents();
             this.toggleEasing(true);
-
-            if (loader) {
-                loader.parentNode.removeChild(loader);
-            }
-
-            if (swipeHintCount < 5 && this.images.length > 1) {
-                setTimeout(function() {
-                    self.galleryWrapper.style['margin-left'] = '-50px';
-
-                    setTimeout(function() {
-                        self.galleryWrapper.style['margin-left'] = '0';
-                    }, 300);
-
-                    self.cookie.set('swipehint', ++swipeHintCount);
-                }, 500);
-            }
         },
 
-        setSizes: function() {
+        setSizes: function(initial) {
             var i,
                 self = this,
                 width = this.gallery.clientWidth,
                 height = width * this.maxRatio;
+
+            if (initial) {
+                // On initial run, set ratio to 2:1
+                height = width * 0.5;
+            }
 
             if (this.dom.hasClass(this.gallery, 'fullscreen')) {
                 height = this.gallery.clientHeight;
@@ -198,6 +257,16 @@
                     self.toggleFullscreen();
                 });
 
+                var bullets = this.dom.getElements('.gallery-bullet');
+                for (i = 0; i < bullets.length; i++) {
+                    bullets[i].addEventListener('click', function(event) {
+                        var index = this.getAttribute('data-index');
+        
+                        self.showImage(index);
+                    });
+
+                }
+
                 var leftRight = this.dom.getElements('.gallery-left,.gallery-right', this.controls);
                 for (var i = 0; i < leftRight.length; i++) {
                     leftRight[i].addEventListener('click', function(e) {
@@ -271,6 +340,8 @@
         },
 
         showImage: function(index) {
+            var i, bullets = this.dom.getElements('.gallery-bullet', this.controls);
+
             if (typeof index == 'undefined') {
                 index = this.currentIndex;
             }
@@ -293,14 +364,22 @@
             this.galleryWrapper.style.transform = 'translate(' + (-1 * this.offset) + 'px)';
 
             var wrappers = this.dom.getElements('.gallery-image-wrapper', this.galleryWrapper);
-            for (var i = 0; i < wrappers.length; i++) {
+            for (i = 0; i < wrappers.length; i++) {
                 this.dom.removeClass(wrappers[i], 'active');
             }
 
             this.dom.addClass(wrapper, 'active');
 
+            if (bullets.length) {
+                for (i = 0; i < bullets.length; i++) {
+                    this.dom.removeClass(bullets[i], 'active');
+                }
+
+                this.dom.addClass(bullets[index], 'active');
+            }
+
             var i = 0,
-                controls = this.dom.getElements('div', this.controls);
+                controls = this.dom.getElements('div.gallery-control', this.controls);
 
             for (i; i < controls.length; i++) {
                 this.dom.addClass(controls[i], 'active');
@@ -309,6 +388,52 @@
                     this.dom.removeClass(controls[i], 'active');
                 }
             }
+        },
+
+
+        getFullscreenPrefixes: function() {
+            var i, self = this,
+                fullscreenMethodNames = [
+                    'webkitRequestFullscreen',
+                    'mozRequestFullScreen',
+                    'msRequestFullscreen',
+                    'requestFullscreen'
+                ],
+                exitMethodNames = [
+                    'webkitExitFullscreen',
+                    'mozCancelFullScreen',
+                    'msExitFullscreen',
+                    'exitFullscreen'
+                ],
+                eventNames = [
+                    'webkitfullscreenchange',
+                    'mozfullscreenchange',
+                    'MSFullscreenChange',
+                    'fullscreenchange'
+                ],
+                fullscreenElements = [
+                    'webkitFullscreenElement',
+                    'mozFullScreenElement',
+                    'msFullscreenElement',
+                    'fullscreenElement'
+                ];
+
+            for (i = 0;  i < fullscreenMethodNames.length; i++) {
+                var check = fullscreenMethodNames[i];
+
+                if (self.gallery[check]) {
+                    self.fullscreenAPI = {
+                        'requestFullscreen': check,
+                        'exitFullscreen': exitMethodNames[i],
+                        'event': eventNames[i],
+                        'fullscreenElement': fullscreenElements[i]
+                    };
+
+                    return true;
+                }
+            }
+
+            return false;
         }
     };
 })(window, document);
