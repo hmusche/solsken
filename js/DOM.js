@@ -46,6 +46,30 @@
             return null;
         },
 
+        getPrevious: function(identifier, element) {
+            var previousSibling = element.previousSibling;
+
+            while(previousSibling) {
+                if (this.testIdentifier(identifier, previousSibling)) {
+                    return previousSibling;
+                } else {
+                    previousSibling = previousSibling.previousSibling
+                }
+            }
+        },
+
+        getNext: function(identifier, element) {
+            var nextSibling = element.nextSibling;
+
+            while(nextSibling) {
+                if (this.testIdentifier(identifier, nextSibling)) {
+                    return nextSibling;
+                } else {
+                    nextSibling = nextSibling.nextSibling
+                }
+            }
+        },
+
         createElement: function(tag, options) {
             options = options || {};
 
