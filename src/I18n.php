@@ -158,6 +158,20 @@ class I18n {
     }
 
     /**
+     * Returns a formatted date and time string, according to format and current locale
+     * @param  mixed  $dt     Either DateTime object or UNIX timestamp
+     * @param  string $format Format to return
+     * @return string
+     */
+    public function formatDatetime($dt, $format = 'medium') {
+        if (!is_object($dt)) {
+            $dt = \Punic\Calendar::toDateTime($dt);
+        }
+
+        return \Punic\Calendar::formatDatetime($dt, $format, $this->getLocale(true));
+    }
+
+    /**
      * Returns a formatted date string, according to format and current locale
      * @param  mixed  $dt     Either DateTime object or UNIX timestamp
      * @param  string $format Format to return
@@ -168,7 +182,7 @@ class I18n {
             $dt = \Punic\Calendar::toDateTime($dt);
         }
 
-        return \Punic\Calendar::formatDatetime($dt, $format, $this->getLocale(true));
+        return \Punic\Calendar::formatDate($dt, $format, $this->getLocale(true));
     }
 
     /**
