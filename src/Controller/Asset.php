@@ -8,7 +8,7 @@ use Solsken\Controller;
 use Solsken\Registry;
 use Solsken\Image;
 
-use Leafo\ScssPhp\Compiler;
+use ScssPhp\ScssPhp\Compiler;
 
 class Asset extends Controller {
     public function preDispatch() {
@@ -60,10 +60,14 @@ class Asset extends Controller {
             }
         }
 
-        header('Last-modified: ' . gmdate('D, d M Y H:i:s ', $lastMTime) . 'GMT');
-        header('Content-Length: ' . strlen($output));
-
+        ob_start();
         echo $output;
+
+        header('Last-modified: ' . gmdate('D, d M Y H:i:s ', $lastMTime) . 'GMT');
+        header('Content-Length: ' . ob_get_length());
+
+        ob_end_flush();
+
     }
 
     public function cssAction() {
